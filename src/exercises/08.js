@@ -48,12 +48,23 @@ class Toggle extends React.Component {
   //
   // 🐨 Finally, update all pre-existing instances of this.setState
   // to this.internalSetState
+  internalSetState(changes, callback) {
+    this.setState(state => {
+      const changesObject = 
+        typeof changes === 'function' ? changes(state) : changes
+      const reducedChanges = this.props.stateReducer(
+        state,
+        changesObject
+      )
+      return reducedChanges
+    }, callback)
+  }
   reset = () =>
-    this.setState(this.initialState, () =>
+    this.internalSetState(this.initialState, () =>
       this.props.onReset(this.state.on),
     )
   toggle = () =>
-    this.setState(
+    this.internalSetState(
       ({on}) => ({on: !on}),
       () => this.props.onToggle(this.state.on),
     )
